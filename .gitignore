@@ -1,0 +1,14 @@
+node_modules/
+dist/
+build/
+.DS_Store
+*.log
+.env
+.env.local
+apps/web/dist/
+apps/api/dist/
+.vite/
+coverage/
+
+# Educational demo only — intentionally "wrong" VITE_ secret for the UI panel
+!apps/web/.env

@@ -1,0 +1,23 @@
+{
+  "name": "api-security-lab",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Japanese educational lab for API security — vulnerable vs safe endpoints side by side",
+  "scripts": {
+    "dev": "concurrently -n api,web -c red,cyan \"npm run dev -w apps/api\" \"npm run dev -w apps/web\"",
+    "dev:api": "npm run dev -w apps/api",
+    "dev:web": "npm run dev -w apps/web",
+    "build": "npm run build -w apps/api && npm run build -w apps/web",
+    "start": "npm run start -w apps/api"
+  },
+  "workspaces": [
+    "apps/api",
+    "apps/web"
+  ],
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
