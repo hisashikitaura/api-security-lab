@@ -56,4 +56,49 @@ export const CONCEPT_TEXT: Record<string, { name: string; explanation: string }>
     explanation:
       "VITE_ 変数はフロントバンドルに入る。API秘密はサーバー専用環境変数に置く。",
   },
+  csrf_vuln: {
+    name: "CSRF（脆弱）",
+    explanation:
+      "Cookieセッションだけで状態変更すると、別サイトからの偽装POSTで勝手に操作される。",
+  },
+  csrf_safe: {
+    name: "CSRF対策 + SameSite",
+    explanation:
+      "状態変更に CSRF トークンを要求し、Cookie に SameSite=Lax/Strict を付けてクロスサイト送信を抑える。",
+  },
+  jwt_tamper_vuln: {
+    name: "JWT改ざん（脆弱）",
+    explanation:
+      "署名を検証せず alg:none や偽ペイロードを信頼すると、sub/role を自由に書き換えられる。",
+  },
+  jwt_tamper_safe: {
+    name: "JWT改ざん対策",
+    explanation:
+      "サーバー側で HMAC 等の署名を検証し、改ざん・alg:none トークンを拒否する。",
+  },
+  idor_write_vuln: {
+    name: "書き込み側 IDOR（脆弱）",
+    explanation:
+      "認証済みでも PUT/DELETE で所有者を見ないと、他人のリソースを改ざん・削除できる。",
+  },
+  idor_write_safe: {
+    name: "書き込み側 IDOR対策",
+    explanation:
+      "更新・削除でも JWT のユーザーと ownerId を照合し、他人なら 403 を返す。",
+  },
+  headers_vuln: {
+    name: "セキュリティヘッダー欠落",
+    explanation:
+      "CSP / X-Frame-Options 等が無いと、XSS・クリックジャッキング・MIMEスニッフィングの被害が広がりやすい。",
+  },
+  headers_safe: {
+    name: "セキュリティヘッダー",
+    explanation:
+      "CSP・X-Frame-Options・nosniff・Referrer-Policy 等でブラウザ側の防御層を足す。",
+  },
+  openapi_check: {
+    name: "OpenAPI クロスチェック",
+    explanation:
+      "実装リクエストを仕様と突合し、未宣言パスや追加フィールド（シャドーAPI / 過剰受信）を検出する。",
+  },
 };

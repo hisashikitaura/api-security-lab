@@ -15,6 +15,7 @@ export async function api(
 ): Promise<ApiResult> {
   const res = await fetch(`${BASE}${path}`, {
     ...init,
+    credentials: init.credentials ?? "include",
     headers: {
       "Content-Type": "application/json",
       ...(init.headers ?? {}),
@@ -32,4 +33,21 @@ export async function api(
     headers[k] = v;
   });
   return { status: res.status, ok: res.ok, data, headers };
+}
+
+/** Client-side forge of alg:none JWT (mirrors server helper) */
+export function forgeAlgNoneJwt(claims: {
+  sub: string;
+  username: string;
+  role: string;
+}): string {
+  const enc = (obj: unknown) =>
+    btoa(JSON.stringify(obj))
+      .replace(/=+$/g, "")
+      .replace(/\+/g, "-")
+      .replace(/\//g, "_");
+  return `${enc({ alg: "none", typ: "JWT" })}.${enc({
+    ...claims,
+    iat: Math.floor(Date.now() / 1000),
+  })}.`;
 }

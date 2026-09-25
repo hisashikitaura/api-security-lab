@@ -10,19 +10,28 @@
 - **所有していないシステム・本番環境へのテスト・攻撃には使わないでください。**
 - デモキー（`lab-demo-key`）やパスワードは本物の秘密ではありません。
 
-## 学べるデモ（v1）
+## 学べるデモ
 
+### v1
 1. **認証** — APIキーヘッダー vs JWT（発行・署名/期限検証・期限切れ失敗）
 2. **認可 / BOLA** — Alice が Bob のノート ID を取る（脆弱は成功、安全は 403）
 3. **Mass Assignment** — ボディに `role: admin` を混ぜる（脆弱は昇格、安全は無視）
 4. **レート制限** — 連打で HTTP 429
 5. **CORS + 秘密情報** — CORS の意味と、`VITE_` に秘密を置いてはいけない理由
-6. **いま学んだ概念** — サイドパネルに概念名と短い日本語解説を蓄積
+6. **いま学んだ概念** — サイドパネル（右上 sticky）に概念名と短い日本語解説を蓄積
+
+### v2（追加）
+7. **CSRF** — Cookie セッションの状態変更。脆弱はトークンなしで成功、安全は `X-CSRF-Token` + SameSite 説明
+8. **JWT 改ざん** — `alg:none` / 偽ペイロードで `sub`・`role` 書き換え。脆弱は受理、安全は HMAC 検証で拒否
+9. **書き込み側 IDOR** — Alice JWT で Bob ノートを PUT/DELETE。脆弱は成功、安全は 403
+10. **セキュリティヘッダー** — `/api/vuln/headers-demo` vs `/api/safe/headers-demo`（CSP 等）の比較 UI
+11. **OpenAPI クロスチェック** — `GET /api/openapi.json|.yaml` と `POST /api/safe/openapi-check`
 
 詳細な OWASP API Top 10 対応表: [docs/API-SECURITY.md](./docs/API-SECURITY.md)
 
 ## 学習パス（おすすめ順）
 
+### v1
 1. APIキーで ping → 誤ったキーで 401
 2. Alice / Bob で JWT 発行 → `/me` 成功
 3. 短い寿命 JWT で期限切れを体験
@@ -30,6 +39,13 @@
 5. `role: admin` を送って Mass Assignment を比較
 6. レート制限を 8 回連打
 7. CORS / `VITE_` シークレットパネルを読む
+
+### v2
+8. CSRF: セッションログイン → トークンなし送金（脆弱）→ 安全側で 403 → 正しいトークンで成功
+9. JWT 改ざん: alg:none 偽造 → 脆弱 `/vuln/jwt/me` 成功 → 安全 `/safe/jwt/me` 拒否
+10. 書き込み IDOR: Alice で Bob ノート PUT/DELETE を脆弱/安全で比較 → ノート初期化
+11. セキュリティヘッダー: 両方取得して比較表を読む
+12. OpenAPI: 宣言済みログイン OK → 未宣言フィールド / 未宣言パスを検出
 
 ## 必要環境
 

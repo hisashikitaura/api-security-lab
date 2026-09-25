@@ -35,6 +35,15 @@ export interface Profile {
   bio: string;
 }
 
+/** Cookie-based CSRF demo session */
+export interface CsrfSession {
+  sessionId: string;
+  userId: string;
+  username: string;
+  csrfToken: string;
+  balance: number;
+}
+
 export const DEMO_API_KEY = "lab-demo-key";
 /** Server-only secret — never expose via VITE_ env */
 export const SERVER_SECRET = "server-only-lab-secret-do-not-put-in-vite";
@@ -43,6 +52,9 @@ export const JWT_SECRET = new TextEncoder().encode(
 );
 export const RATE_LIMIT_MAX = 5;
 export const RATE_LIMIT_WINDOW_MS = 10_000;
+
+export const SESSION_COOKIE = "lab_session";
+export const CSRF_HEADER = "X-CSRF-Token";
 
 export const users: User[] = [
   {
@@ -61,7 +73,7 @@ export const users: User[] = [
   },
 ];
 
-export const notes: Note[] = [
+const NOTES_SEED: Note[] = [
   {
     id: "n-alice-1",
     ownerId: "u-alice",
@@ -75,6 +87,9 @@ export const notes: Note[] = [
     body: "銀行口座のメモ（デモ）。Aliceには見せたくない内容です。",
   },
 ];
+
+/** Mutable notes for write-side IDOR demos */
+export let notes: Note[] = NOTES_SEED.map((n) => ({ ...n }));
 
 export const orders: Order[] = [
   {
@@ -111,6 +126,9 @@ export const rateBuckets = new Map<
   { count: number; resetAt: number }
 >();
 
+/** CSRF demo sessions keyed by session cookie value */
+export const csrfSessions = new Map<string, CsrfSession>();
+
 export function findUserByUsername(username: string): User | undefined {
   return users.find((u) => u.username === username);
 }
@@ -137,4 +155,45 @@ export function resetProfiles(): void {
       bio: `${u.displayName} の自己紹介（デモ）`,
     });
   }
+}
+
+export function resetNotes(): void {
+  notes = NOTES_SEED.map((n) => ({ ...n }));
+}
+
+export function updateNote(
+  id: string,
+  patch: { title?: string; body?: string },
+): Note | undefined {
+  const note = findNoteById(id);
+  if (!note) return undefined;
+  if (typeof patch.title === "string") note.title = patch.title;
+  if (typeof patch.body === "string") note.body = patch.body;
+  return note;
+}
+
+export function deleteNote(id: string): boolean {
+  const idx = notes.findIndex((n) => n.id === id);
+  if (idx < 0) return false;
+  notes.splice(idx, 1);
+  return true;
+}
+
+export function createCsrfSession(user: User): CsrfSession {
+  const sessionId = `sess-${user.username}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+  const csrfToken = `csrf-${Math.random().toString(36).slice(2)}${Math.random().toString(36).slice(2)}`;
+  const session: CsrfSession = {
+    sessionId,
+    userId: user.id,
+    username: user.username,
+    csrfToken,
+    balance: 10_000,
+  };
+  csrfSessions.set(sessionId, session);
+  return session;
+}
+
+export function findCsrfSession(sessionId: string | undefined): CsrfSession | undefined {
+  if (!sessionId) return undefined;
+  return csrfSessions.get(sessionId);
 }

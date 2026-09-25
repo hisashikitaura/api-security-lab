@@ -1,0 +1,68 @@
+# API Security Lab — OpenAPI 3.0 subset (v2)
+# Educational only. Full JSON: GET /api/openapi.json
+openapi: 3.0.3
+info:
+  title: API Security Lab (subset)
+  version: "2.0.0"
+  description: Educational OpenAPI subset for cross-checking requests.
+servers:
+  - url: http://localhost:8787
+paths:
+  /api/health:
+    get:
+      summary: Health check
+  /api/safe/auth/login:
+    post:
+      summary: Issue JWT
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [username, password]
+              additionalProperties: false
+              properties:
+                username: { type: string }
+                password: { type: string }
+                expiresIn: { type: integer }
+  /api/safe/auth/me:
+    get:
+      summary: Current user via JWT
+  /api/safe/notes/{id}:
+    get:
+      summary: Get own note
+    put:
+      summary: Update own note
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                title: { type: string }
+                body: { type: string }
+    delete:
+      summary: Delete own note
+  /api/safe/profile:
+    post:
+      summary: Update profile (allowlist)
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                displayName: { type: string }
+                bio: { type: string }
+  /api/safe/rate-limited:
+    get:
+      summary: Rate-limited ping
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
