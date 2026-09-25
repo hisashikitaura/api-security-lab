@@ -8,7 +8,7 @@ export function ConceptFeed({
   onClear: () => void;
 }) {
   return (
-    <aside className="feed">
+    <div className="feed">
       <div className="feed-header">
         <h2>いま学んだ概念</h2>
         <button type="button" className="linkish" onClick={onClear}>
@@ -30,6 +30,6 @@ export function ConceptFeed({
           ))}
         </ul>
       )}
-    </aside>
+    </div>
   );
 }

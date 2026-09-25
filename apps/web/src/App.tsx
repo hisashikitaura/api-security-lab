@@ -372,11 +372,12 @@ export default function App() {
               </div>
             </div>
           </section>
-
-          <ResultBox result={last} />
         </div>
 
-        <ConceptFeed concepts={concepts} onClear={() => setConcepts([])} />
+        <aside className="sidebar">
+          <ResultBox result={last} />
+          <ConceptFeed concepts={concepts} onClear={() => setConcepts([])} />
+        </aside>
       </div>
     </div>
   );
